@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: simple-consumer
+  kafka:
+    bootstrap-servers:
+      - ${BROKER_HOST_PORT}
+    consumer:
+      group-id: ${CONSUMER_GROUP}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+app:
+  kafka:
+    topic:
+      name: ${APP_KAFKA_TOPIC_NAME}
+      partitions: ${APP_KAFKA_TOPIC_PARTITIONS:1}
+      replication: ${APP_KAFKA_TOPIC_REPLICATION:1}
+    
