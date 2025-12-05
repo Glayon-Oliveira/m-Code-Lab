@@ -22,16 +22,19 @@ public class SimpleConsumerApplication {
 	@KafkaListener(topics = {"${app.kafka.topic.name}"})
 	public void listener(@Payload String message, 
 		@Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-		@Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts) {
+		@Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts,
+		@Header(KafkaHeaders.OFFSET) long offset) {
 		
 		Instant timestamp = Instant.ofEpochMilli(ts);
 		Instant now = Instant.now();
 		
-		System.out.println("Instance Id: " + INSTANCE_ID);
-		System.out.println("Partition: " + partition);
-		System.out.println("Timestamp: " + timestamp);
-		System.out.println("Now: " + now);
-		System.out.println("Message:" + message);
+		System.out.println("INSTANCE_ID: " + INSTANCE_ID);
+		System.out.println("PARTITION: " + partition);
+		System.out.println("OFFSET: " + offset);
+		System.out.println("TIMESTAMP: " + timestamp);
+		System.out.println("NOW: " + now);
+		System.out.println("MESSAGE:" + message);
+		System.out.println("__------------------------------------------------------------------__");
 	}
 
 }
