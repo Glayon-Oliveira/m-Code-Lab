@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: simple-producer
+  kafka:
+    bootstrap-servers: ${BROKER_HOST_PORT}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+app:
+  kafka:
+    topic:
+      name: ${APP_KAFKA_TOPIC_NAME}
+      partitions: ${APP_KAFKA_TOPIC_PARTITIONS:1}
+      replication: ${APP_KAFKA_TOPIC_REPLICATION:1}
+     

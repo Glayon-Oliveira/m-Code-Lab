@@ -1,0 +1,66 @@
+services:
+  producer:
+    image: eclipse-temurin:17-jdk-jammy
+    container_name: producer-1
+    working_dir: /usr/local/consumer
+    networks:
+     - simple-producer-net
+    volumes:
+     - ./:/usr/local/consumer
+     - ~/.m2:/root/.m2
+    environment:
+     APP_KAFKA_TOPIC_NAME: "one_topic"
+     APP_KAFKA_TOPIC_PARTITIONS: 3
+     BROKER_HOST_PORT: sp-kafka-server:9092
+    restart: on-failure
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: ["./mvnw", "spring-boot:run"]
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.9.5
+    container_name: sp-kafka-server
+    networks:
+     - simple-producer-net
+    volumes:
+     - sp-kafka-server-data:/var/lib/kafka/data
+    environment:
+     KAFKA_BROKER_ID: 1
+     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://sp-kafka-server:9092
+     KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+     KAFKA_ZOOKEEPER_CONNECT: sp-zookeeper-server:2181
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/sp-kafka-server/9092"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: on-failure
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: sp-zookeeper-server
+    networks:
+     - simple-producer-net
+    volumes:
+     - sp-zookeeper-server-data:/var/lib/zookeeper/data
+    environment:
+     ZOOKEEPER_CLIENT_PORT: 2181
+    healthcheck:
+     test: ["CMD", "bash", "-c", "echo stat zookeeper 2181"]
+     interval: 5s
+     timeout: 5s
+     retries: 20
+    restart: on-failure
+
+
+networks:
+ simple-producer-net:
+ 
+volumes:
+ sp-kafka-server-data:
+ sp-zookeeper-server-data:
